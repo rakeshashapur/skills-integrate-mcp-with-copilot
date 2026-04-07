@@ -1,50 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mergington High School Activities</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Mergington High School</h1>
-      <h2>Extracurricular Activities</h2>
-    </header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match Arena</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🧠 Memory Match Arena</h1>
+            <p>Test your memory with this classic card-matching game</p>
+        </header>
 
-    <main>
-      <section id="activities-container">
-        <h3>Available Activities</h3>
-        <div id="activities-list">
-          <!-- Activities will be loaded here -->
-          <p>Loading activities...</p>
-        </div>
-      </section>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Game Setup Screen -->
+            <section id="setupScreen" class="screen active">
+                <div class="setup-card">
+                    <h2>Start New Game</h2>
+                    
+                    <div class="form-group">
+                        <label for="playerName">Your Name:</label>
+                        <input type="text" id="playerName" placeholder="Enter your name" value="">
+                    </div>
 
-      <section id="signup-container">
-        <h3>Sign Up for an Activity</h3>
-        <form id="signup-form">
-          <div class="form-group">
-            <label for="email">Student Email:</label>
-            <input type="email" id="email" required placeholder="your-email@mergington.edu" />
-          </div>
-          <div class="form-group">
-            <label for="activity">Select Activity:</label>
-            <select id="activity" required>
-              <option value="">-- Select an activity --</option>
-              <!-- Activity options will be loaded here -->
-            </select>
-          </div>
-          <button type="submit">Sign Up</button>
-        </form>
-        <div id="message" class="hidden"></div>
-      </section>
-    </main>
+                    <div class="form-group">
+                        <label for="playerEmail">Email:</label>
+                        <input type="email" id="playerEmail" placeholder="your.email@example.com">
+                    </div>
 
-    <footer>
-      <p>&copy; 2026 Mergington High School</p>
-    </footer>
+                    <div class="form-group">
+                        <label for="difficultySelect">Difficulty:</label>
+                        <select id="difficultySelect">
+                            <option value="EASY">Easy (4×4 = 8 pairs)</option>
+                            <option value="MEDIUM" selected>Medium (6×4 = 12 pairs)</option>
+                            <option value="HARD">Hard (8×4 = 16 pairs)</option>
+                        </select>
+                    </div>
 
-    <script src="app.js"></script>
-  </body>
+                    <button id="startGameBtn" class="btn btn-primary btn-large">
+                        🎮 Start Game
+                    </button>
+
+                    <button id="leaderboardBtn" class="btn btn-secondary" style="margin-top: 10px;">
+                        📊 View Leaderboard
+                    </button>
+                </div>
+            </section>
+
+            <!-- Game Screen -->
+            <section id="gameScreen" class="screen">
+                <div class="game-header">
+                    <div class="stats-box">
+                        <div class="stat">
+                            <span class="stat-label">Score:</span>
+                            <span id="score" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Moves:</span>
+                            <span id="moves" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Pairs:</span>
+                            <span id="pairs" class="stat-value">0/8</span>
+                        </div>
+                    </div>
+                    <button id="quitGameBtn" class="btn btn-secondary">← Back</button>
+                </div>
+
+                <div class="game-board-wrapper">
+                    <div id="gameBoard" class="game-board"></div>
+                </div>
+
+                <div id="gameMessage" class="game-message" style="display: none;"></div>
+            </section>
+
+            <!-- Win Screen -->
+            <section id="winScreen" class="screen">
+                <div class="win-card">
+                    <h2>🎉 You Won!</h2>
+                    <div class="win-stats">
+                        <p><strong>Final Score:</strong> <span id="finalScore">0</span></p>
+                        <p><strong>Total Moves:</strong> <span id="finalMoves">0</span></p>
+                        <p><strong>Difficulty:</strong> <span id="finalDifficulty">Medium</span></p>
+                    </div>
+                    <button id="playAgainBtn" class="btn btn-primary btn-large">
+                        🔄 Play Again
+                    </button>
+                    <button id="leaderboardFromWinBtn" class="btn btn-secondary">
+                        📊 View Leaderboard
+                    </button>
+                </div>
+            </section>
+
+            <!-- Leaderboard Screen -->
+            <section id="leaderboardScreen" class="screen">
+                <div class="leaderboard-container">
+                    <h2>📊 Leaderboard - Top 10 Players</h2>
+                    <table id="leaderboardTable" class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>High Score</th>
+                                <th>Games Played</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                    <button id="backFromLeaderboardBtn" class="btn btn-primary" style="margin-top: 20px;">
+                        ← Back
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Memory Match Arena © 2026 | A skill demonstration for MCP integration</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
 </html>
