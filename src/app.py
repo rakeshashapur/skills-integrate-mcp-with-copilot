@@ -10,6 +10,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 import os
 from pathlib import Path
+import sqlite3
+import json
 
 app = FastAPI(title="Mergington High School API",
               description="API for viewing and signing up for extracurricular activities")
@@ -19,8 +21,44 @@ current_dir = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=os.path.join(Path(__file__).parent,
           "static")), name="static")
 
-# In-memory activity database
-activities = {
+# Database setup
+DB_FILE = 'activities.db'
+
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS activities
+                 (name TEXT PRIMARY KEY, description TEXT, schedule TEXT, max_participants INTEGER, participants TEXT)''')
+    conn.commit()
+    conn.close()
+
+def load_activities():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute('SELECT * FROM activities')
+    rows = c.fetchall()
+    activities = {}
+    for row in rows:
+        name, desc, sched, max_p, parts = row
+        activities[name] = {
+            'description': desc,
+            'schedule': sched,
+            'max_participants': max_p,
+            'participants': json.loads(parts) if parts else []
+        }
+    conn.close()
+    return activities
+
+def save_activity(name, data):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute('INSERT OR REPLACE INTO activities VALUES (?, ?, ?, ?, ?)',
+              (name, data['description'], data['schedule'], data['max_participants'], json.dumps(data['participants'])))
+    conn.commit()
+    conn.close()
+
+# Initial activities data
+initial_activities = {
     "Chess Club": {
         "description": "Learn strategies and compete in chess tournaments",
         "schedule": "Fridays, 3:30 PM - 5:00 PM",
@@ -77,6 +115,14 @@ activities = {
     }
 }
 
+# Initialize database and load activities
+init_db()
+activities = load_activities()
+if not activities:
+    for name, data in initial_activities.items():
+        save_activity(name, data)
+    activities = load_activities()
+
 
 @app.get("/")
 def root():
@@ -107,6 +153,7 @@ def signup_for_activity(activity_name: str, email: str):
 
     # Add student
     activity["participants"].append(email)
+    save_activity(activity_name, activity)
     return {"message": f"Signed up {email} for {activity_name}"}
 
 
@@ -129,4 +176,5 @@ def unregister_from_activity(activity_name: str, email: str):
 
     # Remove student
     activity["participants"].remove(email)
+    save_activity(activity_name, activity)
     return {"message": f"Unregistered {email} from {activity_name}"}
